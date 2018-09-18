@@ -71,5 +71,7 @@ while not "exit" in args:
 
     else:               # parent (forked ok)
         os.wait() # waiting for process to die
+        os.remove(file)
+        
     args = input(">$ ").split(" ")
 sys.exit(0)
