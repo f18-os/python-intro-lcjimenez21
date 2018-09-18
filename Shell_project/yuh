@@ -22,13 +22,13 @@ while not "exit" in args:
             fd = sys.stdout.fileno() # os.open("p4-output.txt", os.O_CREAT)
             os.set_inheritable(fd, True)
 
-        elif '<' in args:
+        if '<' in args:
             execFile = args[args.index('<') + 1]
             args = args[0:args.index('<')]
             args.append(execFile)
             pass
 
-        elif '|' in args:
+        if '|' in args:
             leftArg = args[0:args.index('|')]
             rightArg = args[args.index('|')+1:]
             nc = os.fork()
@@ -40,7 +40,7 @@ while not "exit" in args:
                 for dir in re.split(":", os.environ['PATH']): # try each directory in the path
                     program = "%s/%s" % (dir, leftArg[0])
                     try:
-                        os.execve(program, leftArg, os.environ) # try to exec program
+                        os.execve(program, leftArg[1:], os.environ) # try to exec program
                     except FileNotFoundError:             # ...expected
                         pass
                 sys.exit(1)
@@ -50,24 +50,25 @@ while not "exit" in args:
                 os.wait()
                 os.close(0)
                 sys.stdin = open('file', 'r')
-                fd = sys.stdin.fileno()
+                fd =  sys.stdin.fileno()
                 os.set_inheritable(fd, True)
                 for dir in re.split(":", os.environ['PATH']): # try each directory in the path
                     program = "%s/%s" % (dir, rightArg[0])
                     try:
-                        os.execve(program, rightArg, os.environ) # try to exec program
+                        os.execve(program, rightArg[1:], os.environ) # try to exec program
                     except FileNotFoundError:             # ...expected
                         pass
                 sys.exit(1)
 
-        else:
-            for dir in re.split(":", os.environ['PATH']): # try each directory in the path
-                program = "%s/%s" % (dir, args[0])
-                try:
-                    os.execve(program, args, os.environ) # try to exec program
-                except FileNotFoundError:             # ...expected
-                    pass                              # ...fail quietly
-            sys.exit(1)
+
+        for dir in re.split(":", os.environ['PATH']): # try each directory in the path
+            program = "%s/%s" % (dir, args[0])
+            try:
+                os.execve(program, args, os.environ) # try to exec program
+            except FileNotFoundError:             # ...expected
+                pass                              # ...fail quietly
+
+        sys.exit(1)
 
     else:               # parent (forked ok)
         os.wait() # waiting for process to die
