@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os, sys, time, re
 
+os.environ["PS1"] = "$//>"
 pid = os.getpid()               # get and remember pid
 
 args = ['clear']
@@ -45,7 +46,6 @@ while not "exit" in args:
                         pass
                 sys.exit(1)
 
-
             else:
                 os.wait()
                 os.close(0)
@@ -71,7 +71,7 @@ while not "exit" in args:
 
     else:               # parent (forked ok)
         os.wait() # waiting for process to die
-        os.remove(file)
-        
-    args = input(">$ ").split(" ")
+        # os.remove(file)
+
+    args = input(os.environ["PS1"]).split(" ")
 sys.exit(0)
