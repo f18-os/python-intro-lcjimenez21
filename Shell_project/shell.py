@@ -46,6 +46,7 @@ while not "exit" in args:
                         pass
                 sys.exit(1)
 
+
             else:
                 os.wait()
                 os.close(0)
@@ -60,6 +61,13 @@ while not "exit" in args:
                         pass
                 sys.exit(1)
 
+        elif 'cd' in args:
+            try:
+                os.chdir(args[1])
+            except IndexError:
+                os.chdir('/Users/Timmy/Desktop/')
+            except FileNotFoundError:
+                pass
         else:
             for dir in re.split(":", os.environ['PATH']): # try each directory in the path
                 program = "%s/%s" % (dir, args[0])
@@ -71,7 +79,6 @@ while not "exit" in args:
 
     else:               # parent (forked ok)
         os.wait() # waiting for process to die
-        # os.remove(file)
 
     args = input(os.environ["PS1"]).split(" ")
 sys.exit(0)
